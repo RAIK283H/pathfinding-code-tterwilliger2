@@ -17,4 +17,4 @@ display_size_bottom = 100
 display_size_top = 0
 display_size_left = 0
 graph_padding = 60
-player_speed = 7
+player_speed = 10
