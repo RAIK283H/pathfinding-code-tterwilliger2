@@ -17,7 +17,14 @@ def get_test_path():
 def get_random_path():
     # Access the current graph using the global_game_data index
     graph = graph_data.graph_data[global_game_data.current_graph_index]  # Correctly access the graph data
+
+    # Preconditions
+    assert 0 <= global_game_data.current_graph_index < len(graph_data.graph_data), \
+        "Precondition failed: Invalid graph index in global_game_data."
     
+    assert 0 <= global_game_data.target_node[global_game_data.current_graph_index] < len(graph), \
+        "Precondition failed: Target node is out of bounds for the current graph."
+
     # Access the start and end nodes
     start_node_index = 0  # Start node is always at index 0
     end_node_index = len(graph) - 1  # Exit node is always at the last index
@@ -46,6 +53,14 @@ def get_random_path():
 
     # Combine both paths and return
     full_path = path_to_target + path_to_end[1:]  # Avoid repeating the target node twice
+
+    # Postconditions
+    assert full_path[0] == start_node_index, \
+        "Postcondition failed: Path does not start at the start node."
+    
+    assert full_path[-1] == end_node_index, \
+        "Postcondition failed: Path does not end at the end node."
+
     return full_path
 
 

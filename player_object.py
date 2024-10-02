@@ -18,6 +18,7 @@ class Player:
         self.sprite = pyglet.sprite.Sprite(img=self.player_image, x=0, y=0, batch=batch, group=group)
         self.player_config_data = player_config_data
         self.distance_traveled = 0
+        self.nodes_visited = set()  # To track unique nodes visited
 
     def update_location(self, x, y):
         self.sprite.update(relative_display_functions.get_relative_graph_x(x) - self.sprite.width / 2,
@@ -28,10 +29,12 @@ class Player:
         self.absolute_x = graph_data.graph_data[global_game_data.current_graph_index][0][0][0]
         self.absolute_y = graph_data.graph_data[global_game_data.current_graph_index][0][0][1]
         self.distance_traveled = 0
+        self.nodes_visited.clear()
 
     def update(self, dt):
         last_absolute_x = self.absolute_x
         last_absolute_y = self.absolute_y
+
         # Make sure one player is always running
         if global_game_data.current_player_index < 0 or global_game_data.current_player_index >= len(config_data.player_data):
             global_game_data.current_player_index = 0
@@ -75,6 +78,8 @@ class Player:
             # Go to next object when target is reached
             if self.absolute_x == target_x and self.absolute_y == target_y:
                 self.current_objective += 1
+                self.nodes_visited.add(global_game_data.graph_paths[self.player_index][self.current_objective - 1])
+
 
         self.distance_traveled = self.distance_traveled + math.sqrt(math.pow(last_absolute_x-self.absolute_x, 2) + math.pow(last_absolute_y-self.absolute_y, 2))
         self.sprite.visible = (global_game_data.current_player_index == self.player_index)
