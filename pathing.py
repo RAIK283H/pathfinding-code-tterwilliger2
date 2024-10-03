@@ -26,10 +26,10 @@ def get_random_path():
         "Precondition failed: Target node is out of bounds for the current graph."
 
     # Access the start and end nodes
-    start_node_index = 0  # Start node is always at index 0
-    end_node_index = len(graph) - 1  # Exit node is always at the last index
-    start_node = start_node_index  # This is the index for the start node
-    end_node = end_node_index  # This is the index for the exit node
+    start_node_index = 0
+    end_node_index = len(graph) - 1
+    start_node = start_node_index
+    end_node = end_node_index
     
     target_node_index = global_game_data.target_node[global_game_data.current_graph_index]
     
@@ -37,10 +37,10 @@ def get_random_path():
     def traverse_randomly(current_node_index, target_node_index):
         path = [current_node_index]
         while current_node_index != target_node_index:
-            adjacency_list = graph[current_node_index][1]  # Get adjacency list of current node
+            adjacency_list = graph[current_node_index][1]
             if not adjacency_list:
-                break  # Safety check in case there are no neighbors
-            next_node_index = random.choice(adjacency_list)  # Randomly choose a neighbor
+                break
+            next_node_index = random.choice(adjacency_list)
             path.append(next_node_index)
             current_node_index = next_node_index
         return path
