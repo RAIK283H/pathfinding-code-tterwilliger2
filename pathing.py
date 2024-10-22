@@ -1,6 +1,7 @@
 import graph_data
 import global_game_data
 from numpy import random
+from collections import deque
 
 def set_current_graph_paths():
     global_game_data.graph_paths.clear()
@@ -64,15 +65,87 @@ def get_random_path():
     return full_path
 
 
-
-
 def get_dfs_path():
-    return [1,2]
+    graph = graph_data.graph_data[global_game_data.current_graph_index]
+    target_node = global_game_data.target_node[global_game_data.current_graph_index]
+    
+    start_node = 0
+    end_node = len(graph) - 1
 
+    # DFS helper function
+    def dfs(current_node, target, visited):
+        if current_node == target:
+            return [current_node]
+        visited.add(current_node)
+        for neighbor in graph[current_node][1]:
+            if neighbor not in visited:
+                path = dfs(neighbor, target, visited)
+                if path:
+                    return [current_node] + path
+        return []
+
+    # DFS from start to target
+    path_to_target = dfs(start_node, target_node, set())
+    
+    # DFS from target to end
+    path_to_end = dfs(target_node, end_node, set())
+
+    full_path = path_to_target + path_to_end[1:]
+
+    # Postconditions
+    assert full_path[0] == start_node, "Postcondition failed: Path does not start at start node."
+    assert full_path[-1] == end_node, "Postcondition failed: Path does not end at end node."
+    assert target_node in full_path, "Postcondition failed: Path does not include the target node."
+
+    # Ensure consecutive nodes are connected
+    for i in range(len(full_path) - 1):
+        assert full_path[i+1] in graph[full_path[i]][1], "Postcondition failed: Path contains invalid edge."
+    
+    return full_path
 
 def get_bfs_path():
-    return [1,2]
+    graph = graph_data.graph_data[global_game_data.current_graph_index]
+    target_node = global_game_data.target_node[global_game_data.current_graph_index]
 
+    start_node = 0
+    end_node = len(graph) - 1
+
+    # BFS helper function
+    def bfs(start, target):
+        queue = deque([[start]])
+        visited = set([start])
+        
+        while queue:
+            path = queue.popleft()
+            node = path[-1]
+            if node == target:
+                return path
+            for neighbor in graph[node][1]:
+                if neighbor not in visited:
+                    visited.add(neighbor)
+                    new_path = list(path)
+                    new_path.append(neighbor)
+                    queue.append(new_path)
+        return []
+
+    # BFS from start to target
+    path_to_target = bfs(start_node, target_node)
+
+    # BFS from target to end
+    path_to_end = bfs(target_node, end_node)
+
+    full_path = path_to_target + path_to_end[1:]
+
+    # Postconditions
+    assert full_path[0] == start_node, "Postcondition failed: Path does not start at start node."
+    assert full_path[-1] == end_node, "Postcondition failed: Path does not end at end node."
+    assert target_node in full_path, "Postcondition failed: Path does not include the target node."
+
+    # Ensure consecutive nodes are connected
+    for i in range(len(full_path) - 1):
+        assert full_path[i+1] in graph[full_path[i]][1], "Postcondition failed: Path contains invalid edge."
+    
+    return full_path
 
 def get_dijkstra_path():
     return [1,2]

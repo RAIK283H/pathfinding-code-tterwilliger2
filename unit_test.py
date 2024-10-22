@@ -48,3 +48,20 @@ class TestPathFinding(unittest.TestCase):
         target_node = global_game_data.target_node[global_game_data.current_graph_index]
         
         self.assertIn(target_node, path, "Path should contain the target node.")
+
+    def test_dfs_path():
+        path = get_dfs_path()
+        assert global_game_data.target_node[global_game_data.current_graph_index] in path, \
+            "Test failed: DFS path does not include target node."
+        assert path[0] == 0, "Test failed: DFS path does not start at the start node."
+        assert path[-1] == len(graph_data.graph_data[global_game_data.current_graph_index]) - 1, \
+            "Test failed: DFS path does not end at the exit node."
+
+    def test_bfs_path():
+        path = get_bfs_path()
+        assert global_game_data.target_node[global_game_data.current_graph_index] in path, \
+            "Test failed: BFS path does not include target node."
+        assert path[0] == 0, "Test failed: BFS path does not start at the start node."
+        assert path[-1] == len(graph_data.graph_data[global_game_data.current_graph_index]) - 1, \
+            "Test failed: BFS path does not end at the exit node."
+
