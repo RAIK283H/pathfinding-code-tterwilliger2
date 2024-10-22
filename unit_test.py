@@ -1,5 +1,8 @@
 import math
 import unittest
+import global_game_data
+import graph_data
+from pathing import get_bfs_path, get_dfs_path, get_random_path
 
 
 class TestPathFinding(unittest.TestCase):
