@@ -2,6 +2,7 @@ import graph_data
 import global_game_data
 from numpy import random
 from collections import deque
+import heapq
 
 def set_current_graph_paths():
     global_game_data.graph_paths.clear()
@@ -149,3 +150,4 @@ def get_bfs_path():
 
 def get_dijkstra_path():
     return [1,2]
+
