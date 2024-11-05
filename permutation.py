@@ -55,11 +55,11 @@ class PermutationSolver:
 
         for perm in permutations:
             if self.is_hamiltonian_cycle(perm):
+                print("Hamiltonian cycle found:", perm)
                 cycles.append([0] + perm + [len(self.graph) - 1])
 
-        if not cycles:
-            return -1
-        else:
-            for cycle in cycles:
-                print("Hamiltonian Cycle:", cycle)
+        if cycles:
             return cycles
+        else:
+            print("-1 or False: No valid Hamiltonian cycle exists")
+            return -1

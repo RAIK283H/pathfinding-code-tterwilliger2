@@ -13,54 +13,6 @@ class Scoreboard:
     player_path_display = []
     player_nodes_visited = []
 
-    winner_label = None  # Label for displaying the winner
-    game_finished = False  # Flag to indicate if the game has finished
-
-    def mark_game_finished(self):
-        """Marks the game as finished and schedules the winner announcement."""
-        self.game_finished = True
-        pyglet.clock.schedule_once(self.announce_winner, 0.1)  # Delay for smooth display
-
-    def announce_winner(self, dt=None):
-        """Announces the winner if the game has finished."""
-        if not self.game_finished:
-            return
-
-        # Determine the winner based on minimal distance traveled
-        winner = None
-        min_distance = float('inf')
-        for player_object in global_game_data.player_objects:
-            if player_object.distance_traveled < min_distance:
-                min_distance = player_object.distance_traveled
-                winner = player_object
-
-        if winner:
-            # Create or update the winner label
-            winner_text = f"Winner: {winner.player_config_data[0]}"
-            if not self.winner_label:
-                # Initialize winner label if it hasn't been created
-                self.winner_label = pyglet.text.Label(
-                    winner_text,
-                    x=config_data.window_width // 2,
-                    y=config_data.window_height // 2,
-                    font_name='Arial',
-                    font_size=24,
-                    bold=True,
-                    color=(255, 215, 0, 255),  # Gold color for visibility
-                    anchor_x='center',
-                    anchor_y='center',
-                    batch=self.batch,
-                    group=self.group
-                )
-            else:
-                # Update text if label already exists
-                self.winner_label.text = winner_text
-    
-    def draw(self):
-        """Draw method to render the winner label if the game has finished."""
-        if self.game_finished and self.winner_label:
-            self.winner_label.draw()
-
     def __init__(self, batch, group):
         self.batch = batch
         self.group = group

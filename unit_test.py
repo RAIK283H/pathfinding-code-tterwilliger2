@@ -96,5 +96,11 @@ class TestPathFinding(unittest.TestCase):
         self.assertFalse(solver.is_hamiltonian_cycle([2, 1]), "Hamiltonian cycle test failed for [2, 1]")
         print("test_is_hamiltonian_cycle passed for cycle [2, 1]")
 
+# Assuming `graph` is your adjacency list where graph[node] = (data, [adjacent_nodes])
+clique_finder = CliqueFinder(graph)
+largest_clique = clique_finder.find_largest_clique()
+print("Largest Clique:", largest_clique)
+print("Size of Largest Clique:", len(largest_clique))
+
 if __name__ == "__main__":
     unittest.main()

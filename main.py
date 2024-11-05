@@ -8,6 +8,7 @@ from graph import Graph
 from player_object import Player
 import random
 from permutation import PermutationSolver
+from clique_finder import CliqueFinder
 
 # Create Viewing Window
 window = pyglet.window.Window(width=config_data.window_width, height=config_data.window_height,
@@ -123,6 +124,13 @@ def display_winner():
         label.draw()  # Draw the label directly instead of adding it to the batch
 
 if __name__ == '__main__':
+    clique_finder = CliqueFinder(graph_data)
+
+    # Find and print the largest clique
+    largest_clique = clique_finder.find_largest_clique()
+    print("Largest Clique:", largest_clique)
+    print("Size of Largest Clique:", len(largest_clique))
+
     pyglet.clock.schedule_interval(update, 1 / 120.0)
     run_all_search_methods()  # Run all search methods once at startup
     pyglet.app.run()
