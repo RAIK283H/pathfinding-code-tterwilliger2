@@ -12,6 +12,7 @@ def set_current_graph_paths():
     global_game_data.graph_paths.append(get_dfs_path())
     global_game_data.graph_paths.append(get_bfs_path())
     global_game_data.graph_paths.append(get_dijkstra_path())
+    #global_game_data.graph_paths.append(get_a_star_path())
 
 
 def get_test_path():
@@ -145,17 +146,16 @@ def get_bfs_path():
 
     # Ensure consecutive nodes are connected
     for i in range(len(full_path) - 1):
-        assert full_path[i+1] in graph[full_path[i]][1], "Postcondition failed: Path contains invalid edge."
+        assert full_path[i+1] in graph[full_path[i]][1]
     
     return full_path
 
 def euclidean_distance(coord1, coord2):
-    """Calculate Euclidean distance between two coordinates."""
+
     return math.sqrt((coord1[0] - coord2[0]) ** 2 + (coord1[1] - coord2[1]) ** 2)
 
 
 def dijkstra_path(graph, start, end):
-    """Perform Dijkstra's algorithm to find the shortest path from `start` to `end`."""
     # Setup all the distance and parent variables
     distances = {i: float('inf') for i in range(len(graph))}
     distances[start] = 0
@@ -194,7 +194,6 @@ def dijkstra_path(graph, start, end):
 
 
 def get_dijkstra_path():
-    """Compute the complete path from start_node to last_node via target_node."""
     import graph_data
     import global_game_data
 
@@ -207,6 +206,67 @@ def get_dijkstra_path():
     # Run Dijkstra on graph
     start_to_target = dijkstra_path(graph, start_node, target)
     target_to_end = dijkstra_path(graph, target, last_node)
+
+    # Combine paths
+    final_path = start_to_target[:-1] + target_to_end
+
+    # Validations
+    assert start_to_target[0] == start_node, "Path does not start at the start node"
+    assert final_path[-1] == last_node, "Path does not end at the last node"
+
+    return final_path
+
+#def a_star_path(graph, start, end):
+    """Implement A* to find the shortest path from `start` to `end`."""
+    distances = {i: float('inf') for i in range(len(graph))}
+    distances[start] = 0
+    heuristic = {i: euclidean_distance(graph[i][0], graph[end][0]) for i in range(len(graph))}
+    priority_queue = [(heuristic[start], start)]  # (priority, node)
+    parents = {start: None}
+
+    while priority_queue:
+        _, current_node = heapq.heappop(priority_queue)
+
+        # If the target node is reached, reconstruct the path
+        if current_node == end:
+            path = []
+            current = end
+            while current is not None:
+                path.append(current)
+                current = parents.get(current)
+            path.reverse()
+            return path
+
+        current_coord, neighbors = graph[current_node][0], graph[current_node][1]
+
+        # Check distances to neighbors
+        for neighbor in neighbors:
+            neighbor_coord = graph[neighbor][0]
+            weight = euclidean_distance(current_coord, neighbor_coord)
+            new_distance = distances[current_node] + weight
+
+            if new_distance < distances[neighbor]:
+                distances[neighbor] = new_distance
+                parents[neighbor] = current_node
+                priority = new_distance + heuristic[neighbor]
+                heapq.heappush(priority_queue, (priority, neighbor))
+
+    return None
+
+#def get_a_star_path():
+    """Compute the complete path from start_node to last_node via target_node."""
+    import graph_data
+    import global_game_data
+
+    # Initialization
+    start_node = 0
+    graph = graph_data.graph_data[global_game_data.current_graph_index]
+    target = global_game_data.target_node[global_game_data.current_graph_index]
+    last_node = len(graph) - 1
+
+    # Run A* on graph
+    start_to_target = a_star_path(graph, start_node, target)
+    target_to_end = a_star_path(graph, target, last_node)
 
     # Combine paths
     final_path = start_to_target[:-1] + target_to_end
