@@ -1,3 +1,4 @@
+import math
 import graph_data
 import global_game_data
 from numpy import random
@@ -148,6 +149,70 @@ def get_bfs_path():
     
     return full_path
 
-def get_dijkstra_path():
-    return [1,2]
+def euclidean_distance(coord1, coord2):
+    """Calculate Euclidean distance between two coordinates."""
+    return math.sqrt((coord1[0] - coord2[0]) ** 2 + (coord1[1] - coord2[1]) ** 2)
 
+
+def dijkstra_path(graph, start, end):
+    """Perform Dijkstra's algorithm to find the shortest path from `start` to `end`."""
+    # Setup all the distance and parent variables
+    distances = {i: float('inf') for i in range(len(graph))}
+    distances[start] = 0
+    priority_queue = [(0, start)]  # (distance, node)
+    parents = {start: None}
+
+    while priority_queue:
+        current_distance, current_node = heapq.heappop(priority_queue)
+
+        # If target/node is hit
+        if current_node == end:
+            # Build the path
+            path = []
+            current = end
+            while current is not None:
+                path.append(current)
+                current = parents.get(current)
+            path.reverse()
+            return path
+
+        current_coord, neighbors = graph[current_node][0], graph[current_node][1]
+
+        # Check the distance of each neighbor
+        for neighbor in neighbors:
+            neighbor_coord = graph[neighbor][0]
+            weight = euclidean_distance(current_coord, neighbor_coord)
+            new_distance = current_distance + weight
+
+            # Update the path if shorter
+            if new_distance < distances[neighbor]:
+                distances[neighbor] = new_distance
+                parents[neighbor] = current_node
+                heapq.heappush(priority_queue, (new_distance, neighbor))
+
+    return None
+
+
+def get_dijkstra_path():
+    """Compute the complete path from start_node to last_node via target_node."""
+    import graph_data
+    import global_game_data
+
+    # Initialization
+    start_node = 0
+    graph = graph_data.graph_data[global_game_data.current_graph_index]
+    target = global_game_data.target_node[global_game_data.current_graph_index]
+    last_node = len(graph) - 1
+
+    # Run Dijkstra on graph
+    start_to_target = dijkstra_path(graph, start_node, target)
+    target_to_end = dijkstra_path(graph, target, last_node)
+
+    # Combine paths
+    final_path = start_to_target[:-1] + target_to_end
+
+    # Validations
+    assert start_to_target[0] == start_node, "Path does not start at the start node"
+    assert final_path[-1] == last_node, "Path does not end at the last node"
+
+    return final_path
