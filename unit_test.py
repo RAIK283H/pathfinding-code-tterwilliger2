@@ -1,7 +1,9 @@
 import math
 import unittest
 from unittest.mock import patch
-from pathing import get_bfs_path, get_dfs_path, get_random_path  # Adjust 'pathing' as needed
+from clique_finder import CliqueFinder
+import graph
+from pathing import get_bfs_path, get_dfs_path, get_dijkstra_path, get_random_path  # Adjust 'pathing' as needed
 from permutation import PermutationSolver  # Adjust 'permutation' as needed
 from pathing import global_game_data, graph_data  # Import global_game_data and graph_data
 
@@ -96,11 +98,23 @@ class TestPathFinding(unittest.TestCase):
         self.assertFalse(solver.is_hamiltonian_cycle([2, 1]), "Hamiltonian cycle test failed for [2, 1]")
         print("test_is_hamiltonian_cycle passed for cycle [2, 1]")
 
-# Assuming `graph` is your adjacency list where graph[node] = (data, [adjacent_nodes])
-clique_finder = CliqueFinder(graph)
-largest_clique = clique_finder.find_largest_clique()
-print("Largest Clique:", largest_clique)
-print("Size of Largest Clique:", len(largest_clique))
+    def test_get_dijkstra_path(self):
+        # Set up the global game data
+        global_game_data.current_graph_index = 0
+        global_game_data.target_node = [1, 2, 3]  # Define target nodes for the test graphs
+
+        # Get the path using Dijkstra's algorithm
+        path = get_dijkstra_path()
+
+        # Perform the assertions
+        assert global_game_data.target_node[global_game_data.current_graph_index] in path, \
+            "Test failed: Dijkstra path does not include the target node."
+        assert path[0] == 0, "Test failed: Dijkstra path does not start at the start node."
+        assert path[-1] == len(graph_data.graph_data[global_game_data.current_graph_index]) - 1, \
+            "Test failed: Dijkstra path does not end at the exit node."
+
+        # Print success message
+        print("test_get_dijkstra_path passed: path includes target node, starts at start node, and ends at exit node.")
 
 if __name__ == "__main__":
     unittest.main()

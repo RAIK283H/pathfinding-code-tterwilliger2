@@ -20,7 +20,7 @@ def get_test_path():
 
 def get_random_path():
     # Access the current graph using the global_game_data index
-    graph = graph_data.graph_data[global_game_data.current_graph_index]  # Correctly access the graph data
+    graph = graph_data.graph_data[global_game_data.current_graph_index]
 
     # Preconditions
     assert 0 <= global_game_data.current_graph_index < len(graph_data.graph_data), \
@@ -56,7 +56,7 @@ def get_random_path():
     path_to_end = traverse_randomly(target_node_index, end_node)
 
     # Combine both paths and return
-    full_path = path_to_target + path_to_end[1:]  # Avoid repeating the target node twice
+    full_path = path_to_target + path_to_end[1:]
 
     # Postconditions
     assert full_path[0] == start_node_index, \
@@ -151,69 +151,74 @@ def get_bfs_path():
     return full_path
 
 def euclidean_distance(coord1, coord2):
-
+    """Calculate Euclidean distance between two coordinates."""
     return math.sqrt((coord1[0] - coord2[0]) ** 2 + (coord1[1] - coord2[1]) ** 2)
 
 
 def dijkstra_path(graph, start, end):
-    # Setup all the distance and parent variables
+    """Find the shortest path in a graph using Dijkstra's algorithm."""
     distances = {i: float('inf') for i in range(len(graph))}
     distances[start] = 0
-    priority_queue = [(0, start)]  # (distance, node)
     parents = {start: None}
+    priority_queue = [(0, start)]  # (distance, node)
 
     while priority_queue:
         current_distance, current_node = heapq.heappop(priority_queue)
 
-        # If target/node is hit
         if current_node == end:
-            # Build the path
+            # Reconstruct the path
             path = []
-            current = end
-            while current is not None:
-                path.append(current)
-                current = parents.get(current)
-            path.reverse()
-            return path
+            while current_node is not None:
+                path.append(current_node)
+                current_node = parents[current_node]
+            return path[::-1]  # Reverse the path
 
-        current_coord, neighbors = graph[current_node][0], graph[current_node][1]
-
-        # Check the distance of each neighbor
-        for neighbor in neighbors:
-            neighbor_coord = graph[neighbor][0]
-            weight = euclidean_distance(current_coord, neighbor_coord)
+        # Check neighbors
+        for neighbor in graph[current_node][1]:  # neighbors of current_node
+            weight = euclidean_distance(graph[current_node][0], graph[neighbor][0])
             new_distance = current_distance + weight
 
-            # Update the path if shorter
             if new_distance < distances[neighbor]:
                 distances[neighbor] = new_distance
                 parents[neighbor] = current_node
                 heapq.heappush(priority_queue, (new_distance, neighbor))
 
-    return None
+    return []  # Return an empty path if no valid path exists
+
+
+def check_path(graph, path):
+    """Check if the path is valid and connected in the graph."""
+    for i in range(len(path) - 1):
+        current_node = path[i]
+        next_node = path[i + 1]
+        if next_node not in graph[current_node][1]:  # Check adjacency list
+            return False
+    return True
 
 
 def get_dijkstra_path():
+    """Find the complete path from start to end via a target node."""
     import graph_data
     import global_game_data
 
     # Initialization
-    start_node = 0
     graph = graph_data.graph_data[global_game_data.current_graph_index]
-    target = global_game_data.target_node[global_game_data.current_graph_index]
-    last_node = len(graph) - 1
+    start_node = 0
+    target_node = global_game_data.target_node[global_game_data.current_graph_index]
+    end_node = len(graph) - 1
 
-    # Run Dijkstra on graph
-    start_to_target = dijkstra_path(graph, start_node, target)
-    target_to_end = dijkstra_path(graph, target, last_node)
+    # Run Dijkstra on both segments
+    start_to_target = dijkstra_path(graph, start_node, target_node)
+    target_to_end = dijkstra_path(graph, target_node, end_node)
+
+    if not start_to_target or not target_to_end:
+        return []  # No valid path
 
     # Combine paths
-    final_path = start_to_target[:-1] + target_to_end
+    final_path = start_to_target[:-1] + target_to_end  # Avoid duplicate target_node
 
     # Validations
-    assert start_to_target[0] == start_node, "Path does not start at the start node"
-    assert final_path[-1] == last_node, "Path does not end at the last node"
-
+    assert check_path(graph, final_path), "Path is not fully connected"
     return final_path
 
 #def a_star_path(graph, start, end):
