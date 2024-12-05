@@ -6,6 +6,7 @@ import graph
 from pathing import get_bfs_path, get_dfs_path, get_dijkstra_path, get_random_path  # Adjust 'pathing' as needed
 from permutation import PermutationSolver  # Adjust 'permutation' as needed
 from pathing import global_game_data, graph_data  # Import global_game_data and graph_data
+from pathing import f_w
 
 class TestPathFinding(unittest.TestCase):
 
@@ -115,6 +116,52 @@ class TestPathFinding(unittest.TestCase):
 
         # Print success message
         print("test_get_dijkstra_path passed: path includes target node, starts at start node, and ends at exit node.")
+
+    def test_fw(self):
+        test_graph = [
+            [(0, 0), [1, 2]],
+            [(100, 100), [0, 2]],
+            [(200, 200), [0, 1]],
+        ]
+        graph_matrix = f_w.adjacency_to_matrix(test_graph)
+        dist, next_node = f_w.floyd_warshall(graph_matrix)
+
+        self.assertEqual(dist[0][1], 1)
+        self.assertEqual(dist[0][2], 1)
+        self.assertEqual(dist[1][2], 1)
+
+        path = f_w.reconstruct_path(next_node, 0, 2)
+        self.assertEqual(path, [0, 2])
+        print("test_fw passed: distances and path are correct for the simple graph.")
+
+    def test_fw_fail(self):
+        graph = [
+            [(0, 0), [1]],
+            [(1, 1), [0]],
+            [(2, 2), []],  # Node 2 is disconnected
+        ]
+        graph_matrix = f_w.adjacency_to_matrix(graph)
+        dist, next_node = f_w.floyd_warshall(graph_matrix)
+
+        # Check unreachable node
+        self.assertEqual(dist[0][2], float('inf'))
+        self.assertEqual(f_w.reconstruct_path(next_node, 0, 2), [])
+        print("test_fw_fail passed: correctly handles disconnected nodes.")
+
+    def test_fw_hard(self):
+        graph = [
+            [(0, 0), [1, 2]],
+            [(1, 1), [0, 2, 3]],
+            [(2, 2), [0, 1, 3]],
+            [(3, 3), [1, 2]],
+        ]
+        graph_matrix = f_w.adjacency_to_matrix(graph)
+        dist, next_node = f_w.floyd_warshall(graph_matrix)
+
+        self.assertEqual(dist[0][3], 2)
+        path = f_w.reconstruct_path(next_node, 0, 3)
+        self.assertEqual(path, [0, 1, 3])
+        print("test_fw_hard passed: distances and path are correct for the complex graph.")
 
 if __name__ == "__main__":
     unittest.main()

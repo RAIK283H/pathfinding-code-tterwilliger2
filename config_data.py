@@ -9,8 +9,10 @@ player_data = [
     ["Random", "2.png", colors.ORANGE],
     ["DFS", "3.png", colors.PURPLE],
     ["BFS", "4.png", colors.BLUE],
-    ["Dijkstra", "5.png", colors.GREEN],
-    #["A*", "6.png", colors.RED]
+    # EXTRA CREDIT: adding f_w player
+    ['Floyd-Warshal','5.png', colors.GREEN],
+   # ["Dijkstra", "5.png", colors.GREEN]
+       #["A*", "6.png", colors.RED]
 ]
 
 display_size_right = 400
@@ -18,4 +20,4 @@ display_size_bottom = 100
 display_size_top = 0
 display_size_left = 0
 graph_padding = 60
-player_speed = 10
+player_speed = 20

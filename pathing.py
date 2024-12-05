@@ -4,6 +4,7 @@ import global_game_data
 from numpy import random
 from collections import deque
 import heapq
+import f_w
 
 def set_current_graph_paths():
     global_game_data.graph_paths.clear()
@@ -12,10 +13,14 @@ def set_current_graph_paths():
     global_game_data.graph_paths.append(get_dfs_path())
     global_game_data.graph_paths.append(get_bfs_path())
     global_game_data.graph_paths.append(get_dijkstra_path())
+    global_game_data.graph_paths.append(get_fw_path())
     #global_game_data.graph_paths.append(get_a_star_path())
 
 
 def get_test_path():
+    print("Current graph index:", global_game_data.current_graph_index)
+    print("Length of test_path:", len(graph_data.test_path))
+    print("test_path:", graph_data.test_path)
     return graph_data.test_path[global_game_data.current_graph_index]
 
 def get_random_path():
@@ -220,6 +225,28 @@ def get_dijkstra_path():
     # Validations
     assert check_path(graph, final_path), "Path is not fully connected"
     return final_path
+
+def get_fw_path():
+    import graph_data
+    import global_game_data
+    graph = graph_data.graph_data[global_game_data.current_graph_index]
+    start_node = 0
+    target_node = global_game_data.target_node[global_game_data.current_graph_index]
+    end_node = len(graph) - 1
+    if not graph:
+        raise ValueError("The current graph is empty.")
+    if target_node >= len(graph):
+        raise IndexError(f"Target node {target_node} is out of bounds for the current graph.")
+    try:
+        full_path = f_w.floyd_warshall_path(graph, start_node, target_node, end_node)
+    except Exception as e:
+        raise RuntimeError(f"Error while computing Floyd-Warshall path: {e}")
+    if not full_path:
+        raise ValueError("Floyd-Warshall returned an empty path.")
+    if full_path[0] != start_node or full_path[-1] != end_node:
+        raise ValueError(f"Invalid path: {full_path}. Path must start at {start_node} and end at {end_node}.")
+
+    return full_path
 
 #def a_star_path(graph, start, end):
     """Implement A* to find the shortest path from `start` to `end`."""

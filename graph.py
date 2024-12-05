@@ -31,8 +31,9 @@ class Graph:
         self.group3 = pyglet.graphics.Group(order=3)
         self.group4 = pyglet.graphics.Group(order=4)
         self.group5 = pyglet.graphics.Group(order=5)
-        pathing.set_current_graph_paths()
         self.set_up_graph()
+        pathing.set_current_graph_paths()
+
 
         target_image = pyglet.resource.image("target.png")
         self.target = pyglet.sprite.Sprite(img=target_image, x=100, y=100, batch=batch,
